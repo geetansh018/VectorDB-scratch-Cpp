@@ -315,6 +315,7 @@ KD-Tree pruning relies on axis-aligned distance bounds. In high dimensions, almo
 
 ---
 
+
 ## Common Issues
 
 | Problem | Fix |
@@ -324,6 +325,195 @@ KD-Tree pruning relies on axis-aligned distance bounds. In high dimensions, almo
 | `g++: command not found` | Add `C:\msys64\ucrt64\bin` to Windows PATH |
 | Port 8080 already in use | Kill the process: `netstat -ano \| findstr 8080` then `taskkill /PID <pid> /F` |
 | LLM answer is slow | Normal — llama3.2 takes 10–30s on a laptop CPU. Use llama3.2:1b for faster answers |
+
+## Step-by-Step Setup (macOS)
+
+### Step 1 — Install the C++ Compiler and Git
+
+Open **Terminal** and run:
+
+```bash
+xcode-select --install
+```
+
+Follow the prompt to install Apple Command Line Tools, which include the C++ compiler and Git. [Apple Command Line Tools instructions](https://developer.apple.com/documentation/xcode/installing-the-command-line-tools)
+
+Verify the tools are available:
+
+```bash
+clang++ --version
+git --version
+```
+
+### Step 2 — Install Ollama and Download the Models
+
+1. Download Ollama for Mac from [ollama.com/download/mac](https://ollama.com/download/mac)
+2. Open the `.dmg` file and drag **Ollama** into **Applications**
+3. Open Ollama and approve its request to make the `ollama` command available in Terminal
+4. In Terminal, download the two required models:
+
+```bash
+ollama pull nomic-embed-text
+ollama pull llama3.2
+```
+
+5. Verify that both models are installed:
+
+```bash
+ollama list
+```
+
+> **macOS requirement:** Ollama currently requires macOS Sonoma 14 or newer. Apple silicon Macs use CPU and GPU support; Intel Macs use CPU only. See the [Ollama macOS documentation](https://docs.ollama.com/macos).
+
+### Step 3 — Clone the Repository
+
+Open **Terminal** and run:
+
+```bash
+git clone https://github.com/geetansh018/VectorDB-scratch-Cpp.git
+cd VectorDB-scratch-Cpp
+```
+
+### Step 4 — Compile the C++ Server
+
+Inside the project folder, run:
+
+```bash
+clang++ -std=c++17 -O2 main.cpp -o db
+```
+
+This creates an executable named `db`.
+
+> macOS does not need the Windows-only `-lws2_32` flag.
+
+### Step 5 — Run Everything
+
+**Terminal 1 — Start Ollama, if it isn’t already running:**
+
+Open Ollama from **Applications**. If needed, you can start it from Terminal:
+
+```bash
+ollama serve
+```
+
+If you see `address already in use`, Ollama is already running, so you can skip this step.
+
+**Terminal 2 — Start the VectorDB server:**
+
+```bash
+./db
+```
+
+**Open your browser** and go to:
+
+```text
+http://localhost:8080
+```
+
+---
+
+## Step-by-Step Setup (Linux)
+
+### Step 1 — Install the C++ Compiler and Git
+
+Open a terminal and install the required tools for your Linux distribution.
+
+**Ubuntu / Debian:**
+
+```bash
+sudo apt update
+sudo apt install build-essential git curl
+```
+
+**Fedora:**
+
+```bash
+sudo dnf install gcc-c++ git curl
+```
+
+**Arch Linux:**
+
+```bash
+sudo pacman -S base-devel git curl
+```
+
+Verify the compiler and Git are available:
+
+```bash
+g++ --version
+git --version
+```
+
+### Step 2 — Install Ollama and Download the Models
+
+Install Ollama using its official Linux installer:
+
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+```
+
+See the [Ollama Linux installation instructions](https://docs.ollama.com/linux) for manual installation and GPU setup.
+
+Download the two required models:
+
+```bash
+ollama pull nomic-embed-text
+ollama pull llama3.2
+```
+
+Verify that both models are installed:
+
+```bash
+ollama list
+```
+
+### Step 3 — Clone the Repository
+
+```bash
+git clone https://github.com/geetansh018/VectorDB-scratch-Cpp.git
+cd VectorDB-scratch-Cpp
+```
+
+### Step 4 — Compile the C++ Server
+
+Inside the project folder, run:
+
+```bash
+g++ -std=c++17 -O2 -pthread main.cpp -o db
+```
+
+This creates an executable named `db`.
+
+### Step 5 — Run Everything
+
+**Terminal 1 — Start Ollama, if it isn’t already running:**
+
+```bash
+ollama serve
+```
+
+Some Linux installations may already be running Ollama as a service. If `ollama serve` reports `address already in use`, Ollama is already running, so you can skip this step.
+
+**Terminal 2 — Start the VectorDB server:**
+
+```bash
+./db
+```
+
+**Open your browser** and go to:
+
+```text
+http://localhost:8080
+```
+
+### macOS and Linux Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| `clang++: command not found` on macOS | Run `xcode-select --install`, complete the installation, and reopen Terminal. |
+| `g++: command not found` on Linux | Install the compiler package for your distribution using Step 1. |
+| `Ollama: OFFLINE` | Open Ollama on macOS, or start it with `ollama serve` if it is not already running. |
+| Port 8080 is already in use | Find the process with `lsof -nP -iTCP:8080 -sTCP:LISTEN`, then stop the matching process with `kill <PID>` if you recognize it. |
 
 ### Use a Smaller/Faster LLM
 
